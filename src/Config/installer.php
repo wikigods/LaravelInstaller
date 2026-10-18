@@ -58,6 +58,25 @@ return [
     |
     */
     'environment' => [
+        /*
+        |--------------------------------------------------------------------------
+        | Custom Environment Variables
+        |--------------------------------------------------------------------------
+        |
+        | Add application-specific variables here to show them in the environment
+        | wizard. Keys must be unique and use uppercase letters, numbers, and
+        | underscores. Supported input types are text, password, number, boolean.
+        |
+        */
+        'custom_variables' => [
+            // 'ALLOW_SUBSCRIBE' => [
+            //     'label' => 'Allow subscriptions',
+            //     'type' => 'boolean',
+            //     'default' => 'false',
+            //     'rules' => 'required|in:true,false',
+            // ],
+        ],
+
         'form' => [
             'rules' => [
                 'app_name'              => 'required|string|max:50',

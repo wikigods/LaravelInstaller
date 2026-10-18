@@ -495,6 +495,32 @@
                         </div>
                     </div>
                 </div>
+                @foreach ($customEnvironmentVariables as $key => $definition)
+                    @php
+                        $fieldType = $definition['type'] ?? 'text';
+                        $fieldValue = old('custom_env.'.$key, $customEnvironmentValues[$key] ?? ($definition['default'] ?? ''));
+                        if ($fieldType === 'password') {
+                            $fieldValue = '';
+                        }
+                    @endphp
+                    <div class="form-group {{ $errors->has('custom_env.'.$key) ? ' has-error ' : '' }}">
+                        <label for="custom_env_{{ $key }}">{{ $definition['label'] ?? $key }}</label>
+                        @if ($fieldType === 'boolean')
+                            <select name="custom_env[{{ $key }}]" id="custom_env_{{ $key }}">
+                                <option value="true" {{ (string) $fieldValue === 'true' ? 'selected' : '' }}>true</option>
+                                <option value="false" {{ (string) $fieldValue !== 'true' ? 'selected' : '' }}>false</option>
+                            </select>
+                        @else
+                            <input type="{{ $fieldType }}" name="custom_env[{{ $key }}]" id="custom_env_{{ $key }}" value="{{ $fieldValue }}" />
+                        @endif
+                        @if ($errors->has('custom_env.'.$key))
+                            <span class="error-block">
+                                <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+                                {{ $errors->first('custom_env.'.$key) }}
+                            </span>
+                        @endif
+                    </div>
+                @endforeach
                 <div class="buttons">
                     <button class="button" type="submit">
                         {{ trans('installer_messages.environment.wizard.form.buttons.install') }}

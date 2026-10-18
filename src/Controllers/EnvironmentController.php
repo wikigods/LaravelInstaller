@@ -44,8 +44,14 @@ class EnvironmentController extends Controller
     public function environmentWizard()
     {
         $envConfig = $this->EnvironmentManager->getEnvContent();
+        $customEnvironmentVariables = $this->EnvironmentManager->getCustomVariables();
+        $customEnvironmentValues = $this->EnvironmentManager->getCustomEnvironmentValues();
 
-        return view('vendor.installer.environment-wizard', compact('envConfig'));
+        return view('vendor.installer.environment-wizard', compact(
+            'envConfig',
+            'customEnvironmentVariables',
+            'customEnvironmentValues'
+        ));
     }
 
     /**
@@ -87,6 +93,15 @@ class EnvironmentController extends Controller
     public function saveWizard(Request $request, Redirector $redirect)
     {
         $rules = config('installer.environment.form.rules');
+        $rules['custom_env'] = 'sometimes|array';
+        foreach ($this->EnvironmentManager->getCustomVariables() as $key => $definition) {
+            $type = $definition['type'] ?? 'text';
+            $defaultRules = $type === 'boolean'
+                ? 'required|in:true,false'
+                : ($type === 'number' ? 'nullable|numeric' : 'nullable|string|max:4096');
+            $rules['custom_env.'.$key] = $definition['rules'] ?? $defaultRules;
+        }
+
         $messages = [
             'environment_custom.required_if' => trans('installer_messages.environment.wizard.form.name_required'),
         ];

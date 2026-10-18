@@ -9,6 +9,27 @@ use Illuminate\Support\Str;
 class EnvironmentManager
 {
     /**
+     * Environment keys managed directly by the wizard, including legacy aliases.
+     *
+     * @var array
+     */
+    private $managedEnvironmentKeys = [
+        'APP_NAME', 'APP_ENV', 'APP_KEY', 'APP_DEBUG', 'LOG_LEVEL', 'APP_URL',
+        'APP_LOCALE', 'APP_FALLBACK_LOCALE', 'APP_FAKER_LOCALE',
+        'APP_MAINTENANCE_DRIVER', 'BCRYPT_ROUNDS', 'LOG_CHANNEL', 'LOG_STACK',
+        'LOG_DEPRECATIONS_CHANNEL', 'DB_CONNECTION', 'DB_HOST', 'DB_PORT',
+        'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD', 'BROADCAST_CONNECTION',
+        'BROADCAST_DRIVER', 'CACHE_STORE', 'CACHE_DRIVER', 'SESSION_DRIVER',
+        'SESSION_LIFETIME', 'SESSION_ENCRYPT', 'SESSION_PATH', 'SESSION_DOMAIN',
+        'QUEUE_CONNECTION', 'QUEUE_DRIVER', 'FILESYSTEM_DISK', 'MEMCACHED_HOST',
+        'REDIS_CLIENT', 'REDIS_HOST', 'REDIS_PASSWORD', 'REDIS_PORT', 'MAIL_MAILER',
+        'MAIL_DRIVER', 'MAIL_SCHEME', 'MAIL_ENCRYPTION', 'MAIL_HOST', 'MAIL_PORT',
+        'MAIL_USERNAME', 'MAIL_PASSWORD', 'MAIL_FROM_ADDRESS', 'MAIL_FROM_NAME',
+        'PUSHER_APP_ID', 'PUSHER_APP_KEY', 'PUSHER_APP_SECRET', 'PUSHER_HOST',
+        'PUSHER_PORT', 'PUSHER_SCHEME', 'PUSHER_APP_CLUSTER',
+    ];
+
+    /**
      * @var string
      */
     private $envPath;
@@ -63,6 +84,59 @@ class EnvironmentManager
     public function getEnvExamplePath()
     {
         return $this->envExamplePath;
+    }
+
+    /**
+     * Get valid custom environment variable definitions from the installer config.
+     *
+     * @return array
+     */
+    public function getCustomVariables()
+    {
+        $definitions = config('installer.environment.custom_variables', []);
+        $variables = [];
+
+        foreach ($definitions as $key => $definition) {
+            if (! is_string($key)
+                || ! preg_match('/^[A-Z_][A-Z0-9_]*$/', $key)
+                || in_array($key, $this->managedEnvironmentKeys, true)
+                || ! is_array($definition)) {
+                continue;
+            }
+
+            $type = $definition['type'] ?? 'text';
+            if (! in_array($type, ['text', 'password', 'number', 'boolean'], true)) {
+                $definition['type'] = 'text';
+            }
+
+            $variables[$key] = $definition;
+        }
+
+        return $variables;
+    }
+
+    /**
+     * Read configured custom values from the current .env file.
+     * Password values are returned to the form controller but should not be rendered.
+     *
+     * @return array
+     */
+    public function getCustomEnvironmentValues()
+    {
+        $keys = array_keys($this->getCustomVariables());
+        if (! $keys || ! file_exists($this->envPath)) {
+            return [];
+        }
+
+        $values = [];
+        foreach (file($this->envPath, FILE_IGNORE_NEW_LINES) as $line) {
+            if (preg_match('/^\s*(?:export\s+)?([A-Z_][A-Z0-9_]*)\s*=\s*(.*)\s*$/', $line, $matches)
+                && in_array($matches[1], $keys, true)) {
+                $values[$matches[1]] = $this->parseEnvValue($matches[2]);
+            }
+        }
+
+        return $values;
     }
 
     /**
@@ -167,6 +241,31 @@ class EnvironmentManager
             'PUSHER_APP_CLUSTER=mt1',
         ]);
 
+        $customValues = $request->input('custom_env', []);
+        $existingCustomValues = $this->getCustomEnvironmentValues();
+        $customLines = [];
+        $customKeys = [];
+
+        foreach ($this->getCustomVariables() as $key => $definition) {
+            $customKeys[] = $key;
+            $value = array_key_exists($key, $customValues)
+                ? $customValues[$key]
+                : ($definition['default'] ?? null);
+
+            if (($definition['type'] ?? 'text') === 'password'
+                && ($value === null || $value === '')
+                && array_key_exists($key, $existingCustomValues)) {
+                $value = $existingCustomValues[$key];
+            }
+
+            $customLines[] = $this->envLine($key, $value);
+        }
+
+        $preservedLines = $this->getUnmanagedEnvLines($customKeys);
+        if ($preservedLines || $customLines) {
+            $envFileData .= "\n\n".implode("\n", array_merge($preservedLines, $customLines));
+        }
+
         try {
             file_put_contents($this->envPath, $envFileData);
         } catch (Exception $e) {
@@ -196,5 +295,59 @@ class EnvironmentManager
         );
 
         return $key.'="'.$value.'"';
+    }
+
+    /**
+     * Preserve existing environment assignments that the wizard does not manage.
+     *
+     * @param  array  $customKeys
+     * @return array
+     */
+    private function getUnmanagedEnvLines(array $customKeys)
+    {
+        if (! file_exists($this->envPath)) {
+            return [];
+        }
+
+        $managedKeys = array_merge($this->managedEnvironmentKeys, $customKeys);
+        $preservedLines = [];
+
+        foreach (file($this->envPath, FILE_IGNORE_NEW_LINES) as $line) {
+            if (preg_match('/^\s*(?:export\s+)?([A-Z_][A-Z0-9_]*)\s*=/', $line, $matches)
+                && ! in_array($matches[1], $managedKeys, true)) {
+                $preservedLines[] = $line;
+            }
+        }
+
+        return $preservedLines;
+    }
+
+    /**
+     * Decode the simple quoted values written by this wizard.
+     *
+     * @param  string  $value
+     * @return string|null
+     */
+    private function parseEnvValue($value)
+    {
+        $value = trim($value);
+        if ($value === 'null') {
+            return null;
+        }
+
+        if (strlen($value) >= 2 && $value[0] === '"' && substr($value, -1) === '"') {
+            $value = substr($value, 1, -1);
+            return str_replace(
+                ['\\\\', '\\"', '\\$', '\\r', '\\n'],
+                ['\\', '"', '$', "\r", "\n"],
+                $value
+            );
+        }
+
+        if (strlen($value) >= 2 && $value[0] === "'" && substr($value, -1) === "'") {
+            return substr($value, 1, -1);
+        }
+
+        return $value;
     }
 }
