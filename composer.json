@@ -1,8 +1,20 @@
 {
-    "name": "rachidlaasri/laravel-installer",
-    "description": "Laravel web installer",
+    "name": "wikigods/laravel-installer",
+    "description": "A community-maintained Laravel web installer, continued from the original LaravelInstaller project.",
+    "keywords": [
+        "laravel",
+        "installer",
+        "setup",
+        "environment"
+    ],
     "license": "MIT",
+    "homepage": "https://github.com/wikigods/LaravelInstaller",
     "authors": [
+        {
+            "name": "Wikigods",
+            "email": "wikigods@gmail.com",
+            "role": "Maintainer"
+        },
         {
             "name": "Rachid Laasri",
             "email": "rashidlaasri@gmail.com"
@@ -12,13 +24,17 @@
             "email": "jeremykenedy@gmail.com"
         }
     ],
+    "support": {
+        "issues": "https://github.com/wikigods/LaravelInstaller/issues",
+        "source": "https://github.com/wikigods/LaravelInstaller"
+    },
     "require": {
         "php": ">=7.0.0",
         "laravel/framework": "^5.5|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0"
     },
     "autoload": {
         "psr-4": {
-            "RachidLaasri\\LaravelInstaller\\": "src/"
+            "Wikigods\\LaravelInstaller\\": "src/"
         },
         "files": [
             "src/Helpers/functions.php"
@@ -27,7 +43,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "RachidLaasri\\LaravelInstaller\\Providers\\LaravelInstallerServiceProvider"
+                "Wikigods\\LaravelInstaller\\Providers\\LaravelInstallerServiceProvider"
             ]
         }
     },

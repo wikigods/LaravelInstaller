@@ -1,6 +1,6 @@
 <?php
 
-namespace RachidLaasri\LaravelInstaller\Helpers;
+namespace Wikigods\LaravelInstaller\Helpers;
 
 class RequirementsChecker
 {

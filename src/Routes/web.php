@@ -1,13 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use RachidLaasri\LaravelInstaller\Controllers\DatabaseController;
-use RachidLaasri\LaravelInstaller\Controllers\EnvironmentController;
-use RachidLaasri\LaravelInstaller\Controllers\FinalController;
-use RachidLaasri\LaravelInstaller\Controllers\PermissionsController;
-use RachidLaasri\LaravelInstaller\Controllers\RequirementsController;
-use RachidLaasri\LaravelInstaller\Controllers\UpdateController;
-use RachidLaasri\LaravelInstaller\Controllers\WelcomeController;
+use Wikigods\LaravelInstaller\Controllers\DatabaseController;
+use Wikigods\LaravelInstaller\Controllers\EnvironmentController;
+use Wikigods\LaravelInstaller\Controllers\FinalController;
+use Wikigods\LaravelInstaller\Controllers\PermissionsController;
+use Wikigods\LaravelInstaller\Controllers\RequirementsController;
+use Wikigods\LaravelInstaller\Controllers\UpdateController;
+use Wikigods\LaravelInstaller\Controllers\WelcomeController;
 
 Route::group([
     'prefix' => 'install',
