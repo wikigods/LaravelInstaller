@@ -1,79 +1,42 @@
 <?php
 
-Route::group(['prefix' => 'install', 'as' => 'LaravelInstaller::', 'namespace' => 'RachidLaasri\LaravelInstaller\Controllers', 'middleware' => ['web', 'install']], function () {
-    Route::get('/', [
-        'as' => 'welcome',
-        'uses' => 'WelcomeController@welcome',
-    ]);
+use Illuminate\Support\Facades\Route;
+use RachidLaasri\LaravelInstaller\Controllers\DatabaseController;
+use RachidLaasri\LaravelInstaller\Controllers\EnvironmentController;
+use RachidLaasri\LaravelInstaller\Controllers\FinalController;
+use RachidLaasri\LaravelInstaller\Controllers\PermissionsController;
+use RachidLaasri\LaravelInstaller\Controllers\RequirementsController;
+use RachidLaasri\LaravelInstaller\Controllers\UpdateController;
+use RachidLaasri\LaravelInstaller\Controllers\WelcomeController;
 
-    Route::get('environment', [
-        'as' => 'environment',
-        'uses' => 'EnvironmentController@environmentMenu',
-    ]);
-
-    Route::get('environment/wizard', [
-        'as' => 'environmentWizard',
-        'uses' => 'EnvironmentController@environmentWizard',
-    ]);
-
-    Route::post('environment/saveWizard', [
-        'as' => 'environmentSaveWizard',
-        'uses' => 'EnvironmentController@saveWizard',
-    ]);
-
-    Route::get('environment/classic', [
-        'as' => 'environmentClassic',
-        'uses' => 'EnvironmentController@environmentClassic',
-    ]);
-
-    Route::post('environment/saveClassic', [
-        'as' => 'environmentSaveClassic',
-        'uses' => 'EnvironmentController@saveClassic',
-    ]);
-
-    Route::get('requirements', [
-        'as' => 'requirements',
-        'uses' => 'RequirementsController@requirements',
-    ]);
-
-    Route::get('permissions', [
-        'as' => 'permissions',
-        'uses' => 'PermissionsController@permissions',
-    ]);
-
-    Route::get('database', [
-        'as' => 'database',
-        'uses' => 'DatabaseController@database',
-    ]);
-
-    Route::get('final', [
-        'as' => 'final',
-        'uses' => 'FinalController@finish',
-    ]);
+Route::group([
+    'prefix' => 'install',
+    'as' => 'LaravelInstaller::',
+    'middleware' => ['web', 'install'],
+], function () {
+    Route::get('/', [WelcomeController::class, 'welcome'])->name('welcome');
+    Route::get('environment', [EnvironmentController::class, 'environmentMenu'])->name('environment');
+    Route::get('environment/wizard', [EnvironmentController::class, 'environmentWizard'])->name('environmentWizard');
+    Route::post('environment/saveWizard', [EnvironmentController::class, 'saveWizard'])->name('environmentSaveWizard');
+    Route::get('environment/classic', [EnvironmentController::class, 'environmentClassic'])->name('environmentClassic');
+    Route::post('environment/saveClassic', [EnvironmentController::class, 'saveClassic'])->name('environmentSaveClassic');
+    Route::get('requirements', [RequirementsController::class, 'requirements'])->name('requirements');
+    Route::get('permissions', [PermissionsController::class, 'permissions'])->name('permissions');
+    Route::get('database', [DatabaseController::class, 'database'])->name('database');
+    Route::get('final', [FinalController::class, 'finish'])->name('final');
 });
 
-Route::group(['prefix' => 'update', 'as' => 'LaravelUpdater::', 'namespace' => 'RachidLaasri\LaravelInstaller\Controllers', 'middleware' => 'web'], function () {
+Route::group([
+    'prefix' => 'update',
+    'as' => 'LaravelUpdater::',
+    'middleware' => 'web',
+], function () {
     Route::group(['middleware' => 'update'], function () {
-        Route::get('/', [
-            'as' => 'welcome',
-            'uses' => 'UpdateController@welcome',
-        ]);
-
-        Route::get('overview', [
-            'as' => 'overview',
-            'uses' => 'UpdateController@overview',
-        ]);
-
-        Route::get('database', [
-            'as' => 'database',
-            'uses' => 'UpdateController@database',
-        ]);
+        Route::get('/', [UpdateController::class, 'welcome'])->name('welcome');
+        Route::get('overview', [UpdateController::class, 'overview'])->name('overview');
+        Route::get('database', [UpdateController::class, 'database'])->name('database');
     });
 
-    // This needs to be out of the middleware because right after the migration has been
-    // run, the middleware sends a 404.
-    Route::get('final', [
-        'as' => 'final',
-        'uses' => 'UpdateController@finish',
-    ]);
+    // This route must remain outside the update middleware after migrations finish.
+    Route::get('final', [UpdateController::class, 'finish'])->name('final');
 });
