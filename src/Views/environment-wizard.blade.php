@@ -92,11 +92,11 @@
                     @endif
                 </div>
 
-                <div class="form-group {{ $errors->has('app_log_level') ? ' has-error ' : '' }}">
-                    <label for="app_log_level">
+                <div class="form-group {{ $errors->has('log_level') ? ' has-error ' : '' }}">
+                    <label for="log_level">
                         {{ trans('installer_messages.environment.wizard.form.app_log_level_label') }}
                     </label>
-                    <select name="app_log_level" id="app_log_level">
+                    <select name="log_level" id="log_level">
                         <option value="debug" selected>{{ trans('installer_messages.environment.wizard.form.app_log_level_label_debug') }}</option>
                         <option value="info">{{ trans('installer_messages.environment.wizard.form.app_log_level_label_info') }}</option>
                         <option value="notice">{{ trans('installer_messages.environment.wizard.form.app_log_level_label_notice') }}</option>
@@ -106,10 +106,10 @@
                         <option value="alert">{{ trans('installer_messages.environment.wizard.form.app_log_level_label_alert') }}</option>
                         <option value="emergency">{{ trans('installer_messages.environment.wizard.form.app_log_level_label_emergency') }}</option>
                     </select>
-                    @if ($errors->has('app_log_level'))
+                    @if ($errors->has('log_level'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                            {{ $errors->first('app_log_level') }}
+                            {{ $errors->first('log_level') }}
                         </span>
                     @endif
                 </div>
@@ -242,38 +242,38 @@
 
 
                     <div class="info">
-                        <div class="form-group {{ $errors->has('broadcast_driver') ? ' has-error ' : '' }}">
-                            <label for="broadcast_driver">{{ trans('installer_messages.environment.wizard.form.app_tabs.broadcasting_label') }}
+                        <div class="form-group {{ $errors->has('broadcast_connection') ? ' has-error ' : '' }}">
+                            <label for="broadcast_connection">{{ trans('installer_messages.environment.wizard.form.app_tabs.broadcasting_label') }}
                                 <sup>
-                                    <a href="https://laravel.com/docs/5.4/broadcasting" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
+                                    <a href="https://laravel.com/docs/13.x/broadcasting" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
                                         <i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
                                         <span class="sr-only">{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}</span>
                                     </a>
                                 </sup>
                             </label>
-                            <input type="text" name="broadcast_driver" id="broadcast_driver" value="log" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.broadcasting_placeholder') }}" />
-                            @if ($errors->has('broadcast_driver'))
+                            <input type="text" name="broadcast_connection" id="broadcast_connection" value="log" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.broadcasting_placeholder') }}" />
+                            @if ($errors->has('broadcast_connection'))
                                 <span class="error-block">
                                     <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                                    {{ $errors->first('broadcast_driver') }}
+                                    {{ $errors->first('broadcast_connection') }}
                                 </span>
                             @endif
                         </div>
 
-                        <div class="form-group {{ $errors->has('cache_driver') ? ' has-error ' : '' }}">
-                            <label for="cache_driver">{{ trans('installer_messages.environment.wizard.form.app_tabs.cache_label') }}
+                        <div class="form-group {{ $errors->has('cache_store') ? ' has-error ' : '' }}">
+                            <label for="cache_store">{{ trans('installer_messages.environment.wizard.form.app_tabs.cache_label') }}
                                 <sup>
-                                    <a href="https://laravel.com/docs/5.4/cache" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
+                                    <a href="https://laravel.com/docs/13.x/cache" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
                                         <i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
                                         <span class="sr-only">{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}</span>
                                     </a>
                                 </sup>
                             </label>
-                            <input type="text" name="cache_driver" id="cache_driver" value="file" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.cache_placeholder') }}" />
-                            @if ($errors->has('cache_driver'))
+                            <input type="text" name="cache_store" id="cache_store" value="file" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.cache_placeholder') }}" />
+                            @if ($errors->has('cache_store'))
                                 <span class="error-block">
                                     <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                                    {{ $errors->first('cache_driver') }}
+                                    {{ $errors->first('cache_store') }}
                                 </span>
                             @endif
                         </div>
@@ -281,7 +281,7 @@
                         <div class="form-group {{ $errors->has('session_driver') ? ' has-error ' : '' }}">
                             <label for="session_driver">{{ trans('installer_messages.environment.wizard.form.app_tabs.session_label') }}
                                 <sup>
-                                    <a href="https://laravel.com/docs/5.4/session" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
+                                    <a href="https://laravel.com/docs/13.x/session" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
                                         <i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
                                         <span class="sr-only">{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}</span>
                                     </a>
@@ -296,20 +296,20 @@
                             @endif
                         </div>
 
-                        <div class="form-group {{ $errors->has('queue_driver') ? ' has-error ' : '' }}">
-                            <label for="queue_driver">{{ trans('installer_messages.environment.wizard.form.app_tabs.queue_label') }}
+                        <div class="form-group {{ $errors->has('queue_connection') ? ' has-error ' : '' }}">
+                            <label for="queue_connection">{{ trans('installer_messages.environment.wizard.form.app_tabs.queue_label') }}
                                 <sup>
-                                    <a href="https://laravel.com/docs/5.4/queues" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
+                                    <a href="https://laravel.com/docs/13.x/queues" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
                                         <i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
                                         <span class="sr-only">{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}</span>
                                     </a>
                                 </sup>
                             </label>
-                            <input type="text" name="queue_driver" id="queue_driver" value="sync" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.queue_placeholder') }}" />
-                            @if ($errors->has('queue_driver'))
+                            <input type="text" name="queue_connection" id="queue_connection" value="sync" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.queue_placeholder') }}" />
+                            @if ($errors->has('queue_connection'))
                                 <span class="error-block">
                                     <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                                    {{ $errors->first('queue_driver') }}
+                                    {{ $errors->first('queue_connection') }}
                                 </span>
                             @endif
                         </div>
@@ -327,7 +327,7 @@
                             <label for="redis_hostname">
                                 {{ trans('installer_messages.environment.wizard.form.app_tabs.redis_host') }}
                                 <sup>
-                                    <a href="https://laravel.com/docs/5.4/redis" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
+                                    <a href="https://laravel.com/docs/13.x/redis" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
                                         <i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
                                         <span class="sr-only">{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}</span>
                                     </a>
@@ -373,27 +373,27 @@
                         </span>
                     </label>
                     <div class="info">
-                        <div class="form-group {{ $errors->has('mail_driver') ? ' has-error ' : '' }}">
-                            <label for="mail_driver">
+                        <div class="form-group {{ $errors->has('mail_mailer') ? ' has-error ' : '' }}">
+                            <label for="mail_mailer">
                                 {{ trans('installer_messages.environment.wizard.form.app_tabs.mail_driver_label') }}
                                 <sup>
-                                    <a href="https://laravel.com/docs/5.4/mail" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
+                                    <a href="https://laravel.com/docs/13.x/mail" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
                                         <i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
                                         <span class="sr-only">{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}</span>
                                     </a>
                                 </sup>
                             </label>
-                            <input type="text" name="mail_driver" id="mail_driver" value="smtp" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_driver_placeholder') }}" />
-                            @if ($errors->has('mail_driver'))
+                            <input type="text" name="mail_mailer" id="mail_mailer" value="smtp" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_driver_placeholder') }}" />
+                            @if ($errors->has('mail_mailer'))
                                 <span class="error-block">
                                     <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                                    {{ $errors->first('mail_driver') }}
+                                    {{ $errors->first('mail_mailer') }}
                                 </span>
                             @endif
                         </div>
                         <div class="form-group {{ $errors->has('mail_host') ? ' has-error ' : '' }}">
                             <label for="mail_host">{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_label') }}</label>
-                            <input type="text" name="mail_host" id="mail_host" value="smtp.mailtrap.io" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_placeholder') }}" />
+                            <input type="text" name="mail_host" id="mail_host" value="127.0.0.1" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_placeholder') }}" />
                             @if ($errors->has('mail_host'))
                                 <span class="error-block">
                                     <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -431,13 +431,17 @@
                                 </span>
                             @endif
                         </div>
-                        <div class="form-group {{ $errors->has('mail_encryption') ? ' has-error ' : '' }}">
-                            <label for="mail_encryption">{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_encryption_label') }}</label>
-                            <input type="text" name="mail_encryption" id="mail_encryption" value="null" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_encryption_placeholder') }}" />
-                            @if ($errors->has('mail_encryption'))
+                        <div class="form-group {{ $errors->has('mail_scheme') ? ' has-error ' : '' }}">
+                            <label for="mail_scheme">{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_encryption_label') }}</label>
+                            <select name="mail_scheme" id="mail_scheme">
+                                <option value="null" selected>{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_scheme_default') }}</option>
+                                <option value="smtp">{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_scheme_smtp') }}</option>
+                                <option value="smtps">{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_scheme_smtps') }}</option>
+                            </select>
+                            @if ($errors->has('mail_scheme'))
                                 <span class="error-block">
                                     <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                                    {{ $errors->first('mail_encryption') }}
+                                    {{ $errors->first('mail_scheme') }}
                                 </span>
                             @endif
                         </div>

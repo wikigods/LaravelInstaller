@@ -45,6 +45,12 @@ class LaravelInstallerServiceProvider extends ServiceProvider
      */
     protected function publishFiles()
     {
+        // Laravel 9+ stores application translations in the root `lang` directory.
+        // Older versions keep them under `resources/lang`.
+        $langPath = method_exists($this->app, 'langPath')
+            ? $this->app->langPath()
+            : base_path('resources/lang');
+
         $this->publishes([
             __DIR__.'/../Config/installer.php' => base_path('config/installer.php'),
         ], 'laravelinstaller');
@@ -58,7 +64,7 @@ class LaravelInstallerServiceProvider extends ServiceProvider
         ], 'laravelinstaller');
 
         $this->publishes([
-            __DIR__.'/../Lang' => base_path('resources/lang'),
+            __DIR__.'/../Lang' => $langPath,
         ], 'laravelinstaller');
     }
 }
