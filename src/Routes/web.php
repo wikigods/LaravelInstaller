@@ -9,6 +9,8 @@ use Wikigods\LaravelInstaller\Controllers\RequirementsController;
 use Wikigods\LaravelInstaller\Controllers\UpdateController;
 use Wikigods\LaravelInstaller\Controllers\WelcomeController;
 
+$updaterPermission = config('installer.updaterPermission', 'p_admin.installer-updates.index');
+
 Route::group([
     'prefix' => 'install',
     'as' => 'LaravelInstaller::',
@@ -23,18 +25,20 @@ Route::group([
     Route::get('requirements', [RequirementsController::class, 'requirements'])->name('requirements');
     Route::get('permissions', [PermissionsController::class, 'permissions'])->name('permissions');
     Route::get('database', [DatabaseController::class, 'database'])->name('database');
+    Route::post('database', [DatabaseController::class, 'run'])->name('databaseRun');
     Route::get('final', [FinalController::class, 'finish'])->name('final');
 });
 
 Route::group([
     'prefix' => 'update',
     'as' => 'LaravelUpdater::',
-    'middleware' => 'web',
+    'middleware' => ['web', 'auth', 'can:'.$updaterPermission],
 ], function () {
     Route::group(['middleware' => 'update'], function () {
         Route::get('/', [UpdateController::class, 'welcome'])->name('welcome');
         Route::get('overview', [UpdateController::class, 'overview'])->name('overview');
         Route::get('database', [UpdateController::class, 'database'])->name('database');
+        Route::post('database', [UpdateController::class, 'run'])->name('databaseRun');
     });
 
     // This route must remain outside the update middleware after migrations finish.

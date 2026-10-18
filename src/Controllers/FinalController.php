@@ -3,29 +3,27 @@
 namespace Wikigods\LaravelInstaller\Controllers;
 
 use Illuminate\Routing\Controller;
+use Illuminate\Http\Request;
 use Wikigods\LaravelInstaller\Events\LaravelInstallerFinished;
-use Wikigods\LaravelInstaller\Helpers\EnvironmentManager;
-use Wikigods\LaravelInstaller\Helpers\FinalInstallManager;
-use Wikigods\LaravelInstaller\Helpers\InstalledFileManager;
 
 class FinalController extends Controller
 {
     /**
-     * Update installed file and display finished view.
+     * Display the one-time installation result without exposing environment values.
      *
-     * @param  \Wikigods\LaravelInstaller\Helpers\InstalledFileManager  $fileManager
-     * @param  \Wikigods\LaravelInstaller\Helpers\FinalInstallManager  $finalInstall
-     * @param  \Wikigods\LaravelInstaller\Helpers\EnvironmentManager  $environment
+     * @param  Request  $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function finish(InstalledFileManager $fileManager, FinalInstallManager $finalInstall, EnvironmentManager $environment)
+    public function finish(Request $request)
     {
-        $finalMessages = $finalInstall->runFinal();
-        $finalStatusMessage = $fileManager->update();
-        $finalEnvFile = $environment->getEnvContent();
+        if (! $request->session()->pull('installer.completed', false)) {
+            abort(404);
+        }
+
+        $finalData = $request->session()->pull('installer.final_data', []);
 
         event(new LaravelInstallerFinished);
 
-        return view('vendor.installer.finished', compact('finalMessages', 'finalStatusMessage', 'finalEnvFile'));
+        return view('vendor.installer.finished', $finalData);
     }
 }

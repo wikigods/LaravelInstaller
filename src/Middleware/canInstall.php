@@ -16,6 +16,17 @@ class canInstall
     public function handle($request, Closure $next)
     {
         if ($this->alreadyInstalled()) {
+            $route = $request->route();
+            $routeName = is_object($route) && method_exists($route, 'getName')
+                ? $route->getName()
+                : '';
+
+            // Allow the one-time completion response for the session that installed the app.
+            if ($routeName === 'LaravelInstaller::final'
+                && $request->session()->get('installer.completed', false)) {
+                return $next($request);
+            }
+
             $installedRedirect = config('installer.installedAlreadyAction');
 
             switch ($installedRedirect) {

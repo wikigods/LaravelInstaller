@@ -27,36 +27,59 @@ class UpdateController extends Controller
      */
     public function overview()
     {
-        $migrations = $this->getMigrations();
-        $dbMigrations = $this->getExecutedMigrations();
-
-        return view('vendor.installer.update.overview', ['numberOfUpdatesPending' => count($migrations) - count($dbMigrations)]);
+        return view('vendor.installer.update.overview', [
+            'numberOfUpdatesPending' => count($this->getPendingMigrations()),
+        ]);
     }
 
     /**
-     * Migrate and seed the database.
+     * Show the updater database confirmation page.
      *
      * @return \Illuminate\View\View
      */
     public function database()
     {
-        $databaseManager = new DatabaseManager;
-        $response = $databaseManager->migrateAndSeed();
-
-        return redirect()->route('LaravelUpdater::final')
-                         ->with(['message' => $response]);
+        return view('vendor.installer.update.database-confirm');
     }
 
     /**
-     * Update installed file and display finished view.
+     * Run pending migrations after an authorized POST.
      *
      * @param  InstalledFileManager  $fileManager
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function run(InstalledFileManager $fileManager)
+    {
+        $databaseManager = new DatabaseManager;
+        $response = $databaseManager->migrateAndSeed();
+
+        if (($response['status'] ?? null) !== 'success') {
+            return redirect()->route('LaravelUpdater::database')->with(['message' => $response]);
+        }
+
+        $fileManager->update();
+        session()->put('updater.final_data', [
+            'updateMessage' => trans('installer_messages.updater.final.finished'),
+        ]);
+        session()->put('updater.completed', true);
+
+        return redirect()->route('LaravelUpdater::final');
+    }
+
+    /**
+     * Display the one-time updater result.
+     *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
-    public function finish(InstalledFileManager $fileManager)
+    public function finish(\Illuminate\Http\Request $request)
     {
-        $fileManager->update();
+        if (! $request->session()->pull('updater.completed', false)) {
+            abort(404);
+        }
 
-        return view('vendor.installer.update.finished');
+        $finalData = $request->session()->pull('updater.final_data', []);
+
+        return view('vendor.installer.update.finished', $finalData);
     }
 }

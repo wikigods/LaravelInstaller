@@ -23,6 +23,7 @@ class LaravelInstallerServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../Config/installer.php', 'installer');
         $this->publishFiles();
         $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
     }

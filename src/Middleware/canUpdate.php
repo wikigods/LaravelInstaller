@@ -49,16 +49,6 @@ class canUpdate
      */
     public function alreadyUpdated()
     {
-        $migrations = $this->getMigrations();
-        $dbMigrations = $this->getExecutedMigrations();
-
-        // If the count of migrations and dbMigrations is equal,
-        // then the update as already been updated.
-        if (count($migrations) == count($dbMigrations)) {
-            return true;
-        }
-
-        // Continue, the app needs an update
-        return false;
+        return count($this->getPendingMigrations()) === 0;
     }
 }

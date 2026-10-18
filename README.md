@@ -23,3 +23,26 @@ composer require wikigods/laravel-installer
 
 If your application refers directly to package classes, update imports from `RachidLaasri\LaravelInstaller` to `Wikigods\LaravelInstaller`.
 
+## Updater authorization
+
+The web updater requires an authenticated user and the Laravel Gate ability configured as `updaterPermission`. The default ability is `p_admin.installer-updates.index`.
+
+Publish the package configuration and change `updaterPermission` in `config/installer.php` if your application uses a different Gate ability. Define that ability in your application, for example in `App\Providers\AppServiceProvider`:
+
+```php
+use Illuminate\Support\Facades\Gate;
+
+public function boot(): void
+{
+    Gate::define('p_admin.installer-updates.index', function ($user) {
+        return (bool) $user->is_admin;
+    });
+}
+```
+
+The `is_admin` check is only an example; use a field or authorization rule that exists in your application. The package does not add a roles system. The first installation happens before application users can authenticate, so protect `/install` at the web server or run the installation in a controlled environment.
+
+## nwidart/laravel-modules
+
+When `nwidart/laravel-modules` is installed with migration auto-discovery enabled, the installer and updater include migration paths registered by enabled modules. The update overview counts only module and application migrations that have not run yet. Migration execution continues through Laravel's standard `migrate` command, which the Modules service provider extends with enabled module paths.
+

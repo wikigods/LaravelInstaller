@@ -19,6 +19,16 @@ return [
         'key' => true,
         'publish' => false,
     ],
+    /*
+    |--------------------------------------------------------------------------
+    | Updater Authorization
+    |--------------------------------------------------------------------------
+    |
+    | The updater requires an authenticated user who is authorized for this
+    | Laravel Gate ability. Change this value to match your application's Gate.
+    |
+    */
+    'updaterPermission' => 'p_admin.installer-updates.index',
     'requirements' => [
         'php' => [
             'openssl',
@@ -155,6 +165,6 @@ return [
     | Boolean value
     |
     */
-    'updaterEnabled' => 'true',
+    'updaterEnabled' => env('INSTALLER_UPDATER_ENABLED', false),
 
 ];
